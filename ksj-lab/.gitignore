@@ -1,0 +1,13 @@
+# 실제 비밀은 커밋 금지
+.env
+# 소스 아카이브(용량/저작권) — 필요시 별도 배포
+source/*.tgz
+# 실습 로그
+observer/logs/
+*.jsonl
+# OS/에디터
+.DS_Store
+*:Zone.Identifier
+node_modules/
+# 원본은 보존하되 재현 가능하므로 커밋 정책은 팀 결정
+.docker/

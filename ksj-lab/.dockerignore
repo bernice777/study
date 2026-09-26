@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+.docker
+original
+references
+source
+docs
+node_modules
+*.jsonl

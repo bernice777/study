@@ -1,0 +1,115 @@
+# SQL Injection Lab — 로컬 격리 실습환경 (MariaDB/MySQL 호환)
+# 모든 포트는 127.0.0.1 에만 바인딩. DB 포트는 공개하지 않음.
+name: study-ksj
+
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+
+services:
+  db:
+    image: mariadb:10.11   # 고정 태그 (latest 금지). MariaDB 10.11 LTS
+    <<: *hardening
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?set in .env}
+      MARIADB_DATABASE: ${LAB_DB_NAME:-sbadmin}
+    # 호스트로 DB 포트를 절대 공개하지 않는다 (ports 없음).
+    volumes:
+      - db_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-connections=50           # Time-based 동시요청 폭주 방지
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [labnet]
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    <<: *hardening
+    environment:
+      LAB_SCOPE: ${LAB_SCOPE:-SQLI}
+      LAB_DB_HOST: db
+      LAB_DB_NAME: ${LAB_DB_NAME:-sbadmin}
+      LAB_DB_USER: ${LAB_APP_USER:-lab_app}
+      LAB_DB_PASSWORD: ${LAB_APP_PASSWORD:?set in .env}
+      # 최소권한 비교(Level 15)용 제한 계정
+      LAB_LIMITED_USER: ${LAB_LIMITED_USER:-lab_limited}
+      LAB_LIMITED_PASSWORD: ${LAB_LIMITED_PASSWORD:?set in .env}
+      LAB_TIME_MAX_SECONDS: ${LAB_TIME_MAX_SECONDS:-2}
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8000}:80"
+    volumes:
+      # 앱 코드는 읽기전용으로 마운트 (웹 경유 파일쓰기/웹셸 방지). 호스트 루트/홈은 마운트하지 않음.
+      - ./apps/ksj-sbadmin:/var/www/html/ksj:ro
+      - ./apps/sqli-ladder:/var/www/html/labs:ro
+      - lab_logs:/var/lab-logs          # 웹루트 밖. JSONL 기록 대상
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/health >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [labnet]
+
+  observer:
+    build:
+      context: .
+      dockerfile: docker/observer/Dockerfile
+    <<: *hardening
+    environment:
+      INSTRUCTOR_TOKEN: ${INSTRUCTOR_TOKEN:?set in .env}
+    ports:
+      - "127.0.0.1:${OBSERVER_PORT:-8002}:80"
+    volumes:
+      - ./observer:/var/www/html:ro
+      - lab_logs:/var/lab-logs:ro       # 로그 읽기 전용
+    networks: [labnet]
+
+  # 강사 전용. 기본 실행에서 제외. `docker compose --profile instructor up -d phpmyadmin`
+  phpmyadmin:
+    image: phpmyadmin:5.2                # 고정 태그
+    <<: *hardening
+    profiles: [instructor]
+    environment:
+      PMA_HOST: db
+      PMA_ABSOLUTE_URI: http://127.0.0.1:8001/
+      # root 자동 로그인 금지: 자격증명을 심지 않음 → 쿠키 로그인 폼에서 수동 로그인(lab_instructor)
+    ports:
+      - "127.0.0.1:${PMA_PORT:-8001}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [labnet]
+
+  # OWASP WebGoat — 보안 학습용 취약 웹앱(로컬 교육 전용). 기본 실행 제외(profile: extra).
+  # 실행:  docker compose --profile extra up -d webgoat
+  webgoat:
+    image: webgoat/webgoat:v2025.3   # 고정 태그 (latest 금지)
+    <<: *hardening
+    profiles: [extra]
+    environment:
+      # 컨테이너 "내부"에서 0.0.0.0 바인딩(도커 접근용). 호스트 노출은 아래 ports 로 127.0.0.1 만.
+      TZ: Asia/Seoul
+      WEBGOAT_HOST: 0.0.0.0
+      WEBWOLF_HOST: 0.0.0.0
+    ports:
+      - "127.0.0.1:${WEBGOAT_PORT:-8083}:8080"   # WebGoat (Burp 8080 충돌 회피)
+      - "127.0.0.1:${WEBWOLF_PORT:-9090}:9090"   # WebWolf (보조)
+    networks: [labnet]
+
+volumes:
+  db_data:
+  lab_logs:
+
+networks:
+  labnet:
+    driver: bridge

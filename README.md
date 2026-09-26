@@ -1,4 +1,66 @@
-# study — Blind SQL Injection Advanced
+# study — KSJ 복원 사이트와 웹해킹 실습
+
+KSJ(K-Shield Jr) PHP/MySQL 사이트를 복원한 교육 환경과 Blind SQL Injection Advanced 워게임을 모았습니다.
+
+| 구성 | 포함 내용 | 실행 안내 | 기본 접속 주소 |
+|---|---|---|---|
+| **KSJ 복원 사이트** | 로그인·회원가입·자유게시판·공지·자료실, SQLi Level 0~15, 필터/Prepared 비교, SQL Observer | [KSJ 실행 가이드](ksj-lab/README.md) | http://127.0.0.1:8000/ksj/ |
+| 강사용 도구 | phpMyAdmin, 학생·강사 가이드, 수업 흐름·원본 분석·변경 기록 | [수업 문서](ksj-lab/README.md#수업과-복원-문서) | Observer: http://127.0.0.1:8002/ |
+| 선택 실습 | OWASP WebGoat / WebWolf | [선택 도구 실행](ksj-lab/README.md#선택-도구) | http://127.0.0.1:8083/WebGoat |
+| Blind SQL Injection Advanced | Flask + MariaDB 독립 워게임 | 아래 실행 방법 | http://127.0.0.1:8010/ |
+
+## KSJ 사이트부터 실행하려면
+
+Docker Desktop을 실행한 뒤 저장소를 내려받고 **`ksj-lab` 폴더로 이동**합니다.
+
+```shell
+git clone https://github.com/bernice777/study.git
+cd study/ksj-lab
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+.\scripts\start.ps1
+```
+
+Linux / WSL:
+
+```bash
+cp .env.example .env
+# .env의 비밀번호와 토큰 값을 바꾼 뒤 실행
+bash scripts/start.sh
+```
+
+Linux/WSL에는 `envsubst`가 필요합니다(Ubuntu: `sudo apt install gettext-base`).
+처음 준비가 끝나면 **http://127.0.0.1:8000/ksj/** 에 접속합니다.
+`start` 스크립트는 DB를 초기화하므로, 다음 실행부터는 **`docker compose up -d`** 를 사용합니다.
+기존 KSJ 환경이 같은 포트를 사용 중이면 `.env`에서 `WEB_PORT=18000`, `OBSERVER_PORT=18002` 등으로 바꿉니다.
+자세한 설정·예제 로그인·종료·초기화 방법은 [KSJ 실행 가이드](ksj-lab/README.md)에 있습니다.
+
+## 저장소 구조
+
+```text
+ksj-lab/            # KSJ 복원 사이트 전체 실행 프로젝트
+  apps/             # KSJ 실행본 + SQLi 단계별 실습
+  original/         # KSJ 원본 보존본
+  db/               # 복원 스키마와 가짜 실습 데이터
+  docker/           # PHP/Apache 및 Observer 이미지
+  scripts/          # Windows / Linux 실행·종료·초기화
+  docs/             # 학생·강사 가이드, 분석 및 변경 기록
+Dockerfile          # 독립 Blind SQLi 워게임 실행 이미지
+run-local.sh
+deploy/             # Blind SQLi 워게임 소스
+original/Dockerfile # Blind SQLi 워게임 원본 Dockerfile
+```
+
+[전체 정리·변경 기록](ksj-lab/docs/STUDY_IMPORT.md)을 참고하세요.
+
+---
+
+# Blind SQL Injection Advanced
 
 웹해킹 기초 스터디를 위한 로컬 Blind SQL Injection 워게임입니다.
 Flask 웹앱과 MariaDB를 Docker 컨테이너 하나에서 실행합니다.

