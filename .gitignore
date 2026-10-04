@@ -7,3 +7,10 @@ __pycache__/
 *.log
 .DS_Store
 Thumbs.db
+
+# 로컬 스터디 작업본과 업로드 압축 보관
+/sql-injection-lab/
+/study-upload.zip
+
+# 로컬 ngrok 실행 파일, 인증 토큰과 공유 비밀번호
+/.ngrok-share/

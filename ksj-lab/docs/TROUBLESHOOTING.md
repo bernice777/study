@@ -1,5 +1,12 @@
 # TROUBLESHOOTING
 
+## Windows Docker는 되는데 WSL에서 연결 실패
+증상: `/var/run/docker.sock`이 없거나 `/usr/bin/docker: Input/output error`가 발생합니다.
+Windows의 `docker.exe version`은 Server까지 나오는데 WSL의 `docker version`만 실패하면
+Docker Desktop → Settings → Resources → WSL Integration에서 사용하는 Ubuntu 배포판을 켜고
+Apply & Restart를 적용하세요. 재시작은 실행 중인 컨테이너에 영향을 줄 수 있습니다.
+복구 후 WSL에서 `docker version`의 Client/Server와 `docker ps`를 확인합니다.
+
 ## Docker Desktop / WSL 자격증명 오류 (pull 실패)
 증상: `error getting credentials ... docker-credential-desktop.exe: exec format error`.
 원인: WSL 에서 Windows 자격증명 헬퍼 실행 실패(`~/.docker/config.json` 의 `credsStore: desktop.exe`).
@@ -26,4 +33,6 @@
 - `./scripts/reset.sh` (스키마+시드+AUTO_INCREMENT+로그 초기화). 다른 Docker 프로젝트/볼륨은 건드리지 않음.
 
 ## 완전 제거
-- `docker compose --profile instructor down -v` 는 **이 프로젝트 볼륨만** 삭제(db_data, lab_logs). 다른 프로젝트 영향 없음.
+- `docker compose --profile instructor --profile extra --profile cms down -v`는
+  **이 프로젝트의 모든 볼륨**을 삭제합니다(sbadmin DB, 로그, XE/RB DB와 사이트 파일 포함).
+  단순 중지에는 `-v`를 사용하지 마세요. 다른 프로젝트 볼륨은 삭제하지 않습니다.

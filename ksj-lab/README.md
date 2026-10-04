@@ -4,6 +4,9 @@ K-Shield Jr 교육용 `sbadmin` PHP/MySQL 코드를 복원한 로컬 Docker 실�
 로그인·회원가입·자유게시판·공지·자료실과 SQLi Level 0~15, SQL 실행 관찰 화면을 포함합니다.
 원본 코드, 복원 근거, 강사·학생 문서도 함께 보관합니다.
 
+수업 2·3차 사이트인 **XE 1.5.1.10 / KimsQ RB 1.2.1**도 선택 실행할 수 있습니다.
+각각 PHP 5.6과 별도 DB를 사용합니다. [XE/RB 설치 안내](docs/CMS_SETUP.md)를 참고하세요.
+
 ## 준비
 
 - Windows: Docker Desktop 실행, Linux 컨테이너 모드. PowerShell에서 진행합니다.
@@ -58,6 +61,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start.ps1
 | SQLi Level 0~15 | http://127.0.0.1:8000/labs/ |
 | 공격·방어 비교 순서 | http://127.0.0.1:8000/labs/roadmap.php |
 | SQL Query Observer | http://127.0.0.1:8002/ |
+| XE (`cms` 프로필, 첫 설치 필요) | http://127.0.0.1:8003/xe/ |
+| KimsQ RB (`cms` 프로필, 첫 설치 필요) | http://127.0.0.1:8004/rb/ |
 
 예제 로그인: `alice@example.com` / `alicepw`.
 관리자 실습 계정: `admin@sbadmin.local` / `admin_pw_2024`.
@@ -118,6 +123,8 @@ OBSERVER_PORT=18002
 PMA_PORT=18001
 WEBGOAT_PORT=18083
 WEBWOLF_PORT=19090
+XE_PORT=18003
+RB_PORT=18004
 ```
 
 그 뒤 `docker compose up -d`를 실행하고 KSJ는 `http://127.0.0.1:18000/ksj/`, Observer는 `http://127.0.0.1:18002/`로 접속합니다.
@@ -125,6 +132,16 @@ WEBWOLF_PORT=19090
 동시에 여러 복사본을 켜려면 각 `.env`에 서로 다른 `COMPOSE_PROJECT_NAME`과 포트를 지정하세요.
 
 ## 선택 도구
+
+XE / KimsQ RB:
+
+```shell
+docker compose --profile cms up -d --build xe rb
+```
+
+기존 sbadmin DB를 초기화하지 않습니다. 처음에는 각 사이트에서 설치를 진행합니다.
+DB 호스트·계정 등은 [설치 안내](docs/CMS_SETUP.md)에 있습니다.
+다음 실행에도 `--profile cms`를 지정하며 데이터는 유지됩니다.
 
 강사용 phpMyAdmin:
 
@@ -144,7 +161,7 @@ docker compose --profile extra up -d webgoat
 - WebWolf: http://127.0.0.1:9090/WebWolf
 - 첫 접속 시 실습용 계정을 직접 만듭니다. 기본 기동에는 포함되지 않습니다.
 
-선택 도구까지 모두 중지: `docker compose --profile instructor --profile extra stop`.
+선택 도구까지 모두 중지: `docker compose --profile instructor --profile extra --profile cms stop`.
 포트를 바꿨다면 위 접속 주소에도 변경한 값을 적용합니다.
 
 ## 수업과 복원 문서
@@ -162,13 +179,15 @@ docker compose --profile extra up -d webgoat
 | [실습 범위](docs/SECURITY.md) | SQLI 모드·격리 설정 |
 | [문제 해결](docs/TROUBLESHOOTING.md) | Docker·DB·포트 문제 |
 | [저장소 정리 기록](docs/STUDY_IMPORT.md) | 가져온 범위·변경·검증·복원 |
+| [XE/RB 설치 안내](docs/CMS_SETUP.md) | 두 CMS의 실행·설치·원본 변경·검증 상태 |
 
 ## 구성과 사용 범위
 
 `web`: PHP 8.2/Apache, `db`: MariaDB 10.11, `observer`: SQL 기록 조회.
 `original/sbadmin`은 보존용 원본이며 실제 서비스는 `apps/ksj-sbadmin`을 사용합니다.
 DB 스키마는 원본 PHP와 교육 메모를 근거로 재구성했고 예제 데이터로 실행합니다.
-개인 강의 메모와 원본 압축 파일은 저장소에 포함하지 않았습니다. 실행에는 필요하지 않습니다.
+개인 강의 메모와 원본 압축 파일은 저장소에 포함하지 않았습니다.
+XE/RB는 옛 세션·설정을 제거한 설치용 압축본을 `docker/legacy/archives/`에 포함합니다.
 
 교육용으로 SQL Injection과 평문 비밀번호 저장이 의도적으로 남아 있습니다.
 `LAB_SCOPE=SQLI`에서는 임의 파일 다운로드·LFI 등을 제한합니다.

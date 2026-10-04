@@ -30,6 +30,15 @@
 </div>
 
 <div class="card">
+ <h3>수업 2·3차 사이트</h3>
+ <a class="btn" href="http://127.0.0.1:<?= (int)(getenv('XE_PORT') ?: 8003) ?>/xe/">XE 1.5.1.10</a>
+ <a class="btn" href="http://127.0.0.1:<?= (int)(getenv('RB_PORT') ?: 8004) ?>/rb/">KimsQ RB 1.2.1</a>
+ <p><code>docker compose --profile cms up -d --build xe rb</code>로 켭니다.
+ 첫 접속 시 각 사이트의 설치를 진행하세요. 설치 값은 <code>docs/CMS_SETUP.md</code>에 있습니다.
+ 두 사이트는 별도 DB를 사용하며 SQL Query Observer 계측은 적용되지 않습니다.</p>
+</div>
+
+<div class="card">
  <h3>DBMS 호환성 안내</h3>
  <p>이 환경은 <b>MariaDB 10.11</b> 기준입니다. MySQL 계열과 대부분 호환되나,
  <b>Error-based 페이로드는 DBMS/버전에 따라 동작이 달라질 수 있습니다</b>

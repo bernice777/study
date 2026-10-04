@@ -8,6 +8,73 @@ x-hardening: &hardening
   restart: unless-stopped
 
 services:
+  # Historical course CMSes: independent PHP 5.6 and DBs, opt in with profile cms.
+  xe-db:
+    image: mariadb:10.11
+    <<: *hardening
+    profiles: [cms]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?set in .env}
+      MARIADB_DATABASE: xe_db
+      MARIADB_USER: xe
+      MARIADB_PASSWORD: ${LAB_APP_PASSWORD:?set in .env}
+    command: ["--sql-mode=", "--character-set-server=utf8", "--collation-server=utf8_general_ci"]
+    volumes: ["xe_db_data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [xe_net]
+
+  rb-db:
+    image: mariadb:10.11
+    <<: *hardening
+    profiles: [cms]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?set in .env}
+      MARIADB_DATABASE: kimsq
+      MARIADB_USER: rb
+      MARIADB_PASSWORD: ${LAB_APP_PASSWORD:?set in .env}
+    command: ["--sql-mode=", "--character-set-server=utf8", "--collation-server=utf8_general_ci"]
+    volumes: ["rb_db_data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [rb_net]
+
+  xe:
+    build:
+      context: .
+      dockerfile: docker/legacy/Dockerfile
+    <<: *hardening
+    profiles: [cms]
+    environment:
+      CMS_APP: xe
+    ports: ["127.0.0.1:${XE_PORT:-8003}:80"]
+    volumes: ["xe_site:/var/www/html/xe"]
+    depends_on:
+      xe-db:
+        condition: service_healthy
+    networks: [xe_front, xe_net]
+
+  rb:
+    build:
+      context: .
+      dockerfile: docker/legacy/Dockerfile
+    <<: *hardening
+    profiles: [cms]
+    environment:
+      CMS_APP: rb
+    ports: ["127.0.0.1:${RB_PORT:-8004}:80"]
+    volumes: ["rb_site:/var/www/html/rb"]
+    depends_on:
+      rb-db:
+        condition: service_healthy
+    networks: [rb_front, rb_net]
+
   db:
     image: mariadb:10.11   # 고정 태그 (latest 금지). MariaDB 10.11 LTS
     <<: *hardening
@@ -43,6 +110,8 @@ services:
       LAB_LIMITED_USER: ${LAB_LIMITED_USER:-lab_limited}
       LAB_LIMITED_PASSWORD: ${LAB_LIMITED_PASSWORD:?set in .env}
       LAB_TIME_MAX_SECONDS: ${LAB_TIME_MAX_SECONDS:-2}
+      XE_PORT: ${XE_PORT:-8003}
+      RB_PORT: ${RB_PORT:-8004}
     ports:
       - "127.0.0.1:${WEB_PORT:-8000}:80"
     volumes:
@@ -107,9 +176,21 @@ services:
     networks: [labnet]
 
 volumes:
+  xe_db_data:
+  rb_db_data:
+  xe_site:
+  rb_site:
   db_data:
   lab_logs:
 
 networks:
+  xe_front:
+    driver: bridge
+  rb_front:
+    driver: bridge
+  xe_net:
+    internal: true
+  rb_net:
+    internal: true
   labnet:
     driver: bridge
