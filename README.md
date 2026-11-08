@@ -4,6 +4,7 @@
 
 | 찾는 자료 | 위치 | 내용 |
 |---|---|---|
+| 시스템 해킹 Docker 실습 | [system-hacking-lab/](system-hacking-lab/README.md) | pwndbg, pwntools, BOF, FSB, Heap, Canary, ROP 3일 실습 |
 | KSJ 사이트와 SQLi 단계별 실습 | [ksj-lab/](ksj-lab/README.md) | PHP/MySQL 복원 사이트, Level 0~15, SQL Observer |
 | XE · KimsQ RB | [CMS 실행·설치 안내](ksj-lab/docs/CMS_SETUP.md) | 같은 Compose 프로젝트의 선택 서비스, 각각 별도 PHP·DB |
 | 기존 로컬 SQL Injection 작업본 | `sql-injection-lab/` (Git 제외) | 기존 Git 이력·로컬 자료를 포함한 작업 폴더 전체 |
@@ -14,6 +15,7 @@
 
 ## 어디서 시작하면 되나요?
 
+- 시스템 해킹 실습: `cd study/system-hacking-lab` 후 `docker compose build`와 `docker compose run --rm lab`을 실행합니다. 자세한 명령은 [시스템 해킹 Docker 가이드](system-hacking-lab/README.md)에 있습니다.
 - KSJ 실습: `cd study/ksj-lab` 후 [실행 가이드](ksj-lab/README.md)를 따릅니다. 기본 주소는 http://127.0.0.1:8000/ksj/ 입니다.
 - Blind SQLi 실습: `cd study/blind-sqli` 후 [실행 가이드](blind-sqli/README.md)를 따릅니다. 기본 주소는 http://127.0.0.1:8010/ 입니다.
 - 수업 자료만 찾을 때: [자료 길잡이](docs/README.md)에서 주제별 문서를 엽니다.
@@ -27,6 +29,7 @@
 study/
 ├── README.md                 # 전체 안내
 ├── docs/                     # 자료 길잡이와 폴더 정리 기록
+├── system-hacking-lab/       # pwndbg·pwntools 기반 시스템 해킹 Docker 실습
 ├── sql-injection-lab/        # 홈에서 옮긴 기존 로컬 작업본
 ├── study-upload.zip          # 기존 업로드용 압축 파일
 ├── ksj-lab/                  # KSJ 실습 프로젝트
