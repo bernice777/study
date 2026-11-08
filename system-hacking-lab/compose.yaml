@@ -1,0 +1,12 @@
+services:
+  lab:
+    build:
+      context: .
+    platform: linux/amd64
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    stdin_open: true
+    tty: true
+    working_dir: /home/exp/exam/2.calling_convention

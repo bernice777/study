@@ -1,0 +1,7 @@
+.git
+argument
+*.o
+**/__pycache__
+**/*.py[cod]
+**/core
+**/core.*
