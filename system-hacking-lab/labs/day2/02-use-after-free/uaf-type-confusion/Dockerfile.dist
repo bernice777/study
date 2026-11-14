@@ -1,0 +1,8 @@
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends socat && rm -rf /var/lib/apt/lists/* && useradd -m ctf
+WORKDIR /home/ctf
+COPY challenge ./challenge
+RUN touch flag && chown root:ctf challenge flag && chmod 0555 challenge && chmod 0440 flag
+USER ctf
+EXPOSE 31337
+CMD ["socat", "TCP-LISTEN:31337,reuseaddr,fork", "EXEC:/home/ctf/challenge,pty,stderr,setsid,sigint,sane"]

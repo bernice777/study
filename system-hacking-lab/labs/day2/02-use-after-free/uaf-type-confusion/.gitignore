@@ -1,0 +1,4 @@
+challenge
+dist/
+__pycache__/
+*.pyc
